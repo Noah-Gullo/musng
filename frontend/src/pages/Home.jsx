@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar"
+import Navbar from "../components/Navbar";
 import Logout from "../components/Logout";
+import Post from "../components/Post";
 
 function Home() {
   const [user, setUser] = useState(null);
@@ -95,27 +96,7 @@ function Home() {
             <p>No posts yet.</p>
           ) : (
             posts.map((post) => (
-              <article key={post.id} className="post-card">
-                <h3>
-                  {post.author.displayName ||
-                    post.author.username}
-                </h3>
-
-                <p>{post.content}</p>
-
-                <p>{post.likes.length} likes</p>
-
-                <div className="comments">
-                  {post.comments.map((comment) => (
-                    <p key={comment.id}>
-                      <strong>
-                        {comment.author.username}
-                      </strong>{" "}
-                      {comment.content}
-                    </p>
-                  ))}
-                </div>
-              </article>
+              <Post key={post.id} post={post} userId={user.id}/>
             ))
           )}
           <Logout onLogout={() => setUser(null)} />

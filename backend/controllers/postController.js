@@ -94,7 +94,99 @@ async function newPost(req, res) {
   }
 }
 
+async function likePost(req, res) {
+  try {
+    const postId = Number(req.params.id);
+
+    const post = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+    });
+
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found",
+      });
+    }
+
+    const existingLike = await prisma.like.findUnique({
+      where: {
+        userId_postId: {
+          userId: req.user.id,
+          postId,
+        },
+      },
+    });
+
+    if (existingLike) {
+      return res.status(409).json({
+        message: "Post already liked",
+      });
+    }
+
+    await prisma.like.create({
+      data: {
+        userId: req.user.id,
+        postId,
+      },
+    });
+
+    return res.status(201).json({
+      message: "Post liked",
+    });
+  } catch (error) {
+    console.error("Like post error:", error);
+
+    return res.status(500).json({
+      message: "Could not like post",
+    });
+  }
+}
+
+async function unlikePost(req, res) {
+  try {
+    const postId = Number(req.params.id);
+
+    const existingLike = await prisma.like.findUnique({
+      where: {
+        userId_postId: {
+          userId: req.user.id,
+          postId,
+        },
+      },
+    });
+
+    if (!existingLike) {
+      return res.status(404).json({
+        message: "Like not found",
+      });
+    }
+
+    await prisma.like.delete({
+      where: {
+        userId_postId: {
+          userId: req.user.id,
+          postId,
+        },
+      },
+    });
+
+    return res.status(200).json({
+      message: "Post unliked",
+    });
+  } catch (error) {
+    console.error("Unlike post error:", error);
+
+    return res.status(500).json({
+      message: "Could not unlike post",
+    });
+  }
+}
+
 module.exports = {
   newPost,
-  getFeed
+  getFeed,
+  likePost,
+  unlikePost
 };
