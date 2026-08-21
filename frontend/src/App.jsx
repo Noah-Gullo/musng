@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { Home, Login, Signup, NewPost, NotFound} from "./pages/Pages.js"
+import { Home, Login, Signup, NewPost, Users, NotFound} from "./pages/Pages.js"
 
 function App() {
   return (
@@ -11,6 +11,7 @@ function App() {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/posts/new" element={<NewPost />} />
+        <Route path="/users" element={<Users />} />
       </Route>
 
       <Route path="*" element={<NotFound/>} />

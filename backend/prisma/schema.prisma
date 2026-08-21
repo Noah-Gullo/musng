@@ -67,9 +67,7 @@ model Follow {
   follower    User     @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
   followingId Int
   following   User     @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
-  status      String   @default("PENDING")
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
   @@unique([followerId, followingId])
   @@index([followingId])
 }
