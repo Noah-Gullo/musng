@@ -1,10 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import NewPost from "./pages/NewPost";
-import NotFound from "./pages/NotFound";
+import { Home, Login, Signup, NewPost, NotFound} from "./pages/Pages.js"
 
 function App() {
   return (
