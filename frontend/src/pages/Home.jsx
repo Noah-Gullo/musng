@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar"
 import Logout from "../components/Logout";
 
 function Home() {
@@ -81,6 +82,7 @@ function Home() {
         </section>
       ) : (
         <section className="feed">
+          <Navbar></Navbar>
           <h1>
             Welcome, {user.displayName || user.username}!
           </h1>
