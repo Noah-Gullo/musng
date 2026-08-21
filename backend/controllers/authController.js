@@ -1,34 +1,38 @@
 const bcrypt = require("bcryptjs");
-const prisma = require("../prisma");
+const prisma = require("../db/prisma");
 
 async function signup(req, res, next) {
   try {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!username || !password) {
+    if (!username || !email || !password) {
       return res.status(400).json({
-        message: "Username and password are required",
+        message: "Username, email, and password are required",
       });
     }
 
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.user.findFirst({
       where: {
-        username,
+        OR: [
+          { username },
+          { email },
+        ],
       },
     });
 
     if (existingUser) {
       return res.status(409).json({
-        message: "Username already exists",
+        message: "Username or email already exists",
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
       data: {
         username,
-        password: hashedPassword,
+        email,
+        passwordHash,
       },
     });
 
@@ -42,12 +46,13 @@ async function signup(req, res, next) {
         user: {
           id: user.id,
           username: user.username,
+          email: user.email,
           displayName: user.displayName,
         },
       });
     });
   } catch (error) {
-    console.error(error);
+    console.error("Signup error:", error);
 
     return res.status(500).json({
       message: "Could not create account",
@@ -61,6 +66,8 @@ function login(req, res) {
     user: {
       id: req.user.id,
       username: req.user.username,
+      email: req.user.email,
+      displayName: req.user.displayName,
     },
   });
 }
@@ -85,8 +92,27 @@ function logout(req, res, next) {
   });
 }
 
+function getMe(req, res) {
+  if (!req.user) {
+    return res.status(401).json({
+      message: "Not authenticated",
+    });
+  }
+
+  return res.status(200).json({
+    user: {
+      id: req.user.id,
+      username: req.user.username,
+      email: req.user.email,
+      displayName: req.user.displayName,
+      profilePhoto: req.user.profilePhoto,
+    },
+  });
+}
+
 module.exports = {
   signup,
   login,
   logout,
+  getMe,
 };
