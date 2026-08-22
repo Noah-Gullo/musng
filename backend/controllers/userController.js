@@ -144,8 +144,71 @@ async function unfollowUser(req, res) {
   }
 }
 
+async function getProfile(req, res) {
+  try {
+    const userId = Number(req.params.id);
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        username: true,
+        displayName: true,
+        bio: true,
+        profilePhoto: true,
+        posts: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                username: true,
+                displayName: true,
+                profilePhoto: true,
+              },
+            },
+            likes: true,
+            comments: {
+              include: {
+                author: {
+                  select: {
+                    id: true,
+                    username: true,
+                    displayName: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      user,
+    });
+  } catch (error) {
+    console.error("Get profile error:", error);
+
+    return res.status(500).json({
+      message: "Could not load profile",
+    });
+  }
+}
+
 module.exports = {
   getUsers,
   followUser,
   unfollowUser,
+  getProfile
 };

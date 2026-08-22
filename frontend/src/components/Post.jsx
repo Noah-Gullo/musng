@@ -2,6 +2,9 @@ import { useState } from "react";
 
 function Post({ post, userId }) {
   const [likes, setLikes] = useState(post.likes);
+  const [comments, setComments] = useState(post.comments);
+  const [showComments, setShowComments] = useState(false);
+  const [commentContent, setCommentContent] = useState("");
   const [error, setError] = useState("");
 
   const liked = likes.some(
@@ -21,8 +24,7 @@ function Post({ post, userId }) {
       );
 
       if (!response.ok) {
-        const data = await response.json();
-        setError(data.message || "Could not update like");
+        setError("Could not update like");
         return;
       }
 
@@ -47,6 +49,49 @@ function Post({ post, userId }) {
     }
   }
 
+  async function handleComment(event) {
+    event.preventDefault();
+
+    if (!commentContent.trim()) {
+      return;
+    }
+
+    try {
+      setError("");
+
+      const response = await fetch(
+        `http://localhost:3000/api/posts/${post.id}/comments`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            content: commentContent,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Could not add comment");
+        return;
+      }
+
+      setComments((currentComments) => [
+        ...currentComments,
+        data.comment,
+      ]);
+
+      setCommentContent("");
+    } catch (error) {
+      console.error(error);
+      setError("Could not add comment");
+    }
+  }
+
   return (
     <article className="post-card">
       <h3>
@@ -57,25 +102,56 @@ function Post({ post, userId }) {
         {post.content}
       </p>
 
-      <button onClick={handleLike}>
-        {liked ? "Unlike" : "Like"}
-      </button>
+      <div className="post-actions">
+        <button type="button" onClick={handleLike}>
+          {liked ? "Unlike" : "Like"}
+        </button>
 
-      <span>
-        {" "}
-        {likes.length} {likes.length === 1 ? "like" : "likes"}
-      </span>
+        <span>
+          {likes.length} {likes.length === 1 ? "like" : "likes"}
+        </span>
+
+        <button type="button"onClick={() => setShowComments(!showComments)}>
+          {showComments ? "Hide Comments" : "Comments"} (
+          {comments.length})
+        </button>
+      </div>
 
       {error && <p>{error}</p>}
 
-      <div className="comments">
-        {post.comments.map((comment) => (
-          <p key={comment.id}>
-            <strong>{comment.author.username}</strong>{" "}
-            {comment.content}
-          </p>
-        ))}
-      </div>
+      {showComments && (
+        <div className="comments">
+          {comments.length === 0 ? (
+            <p>No comments yet.</p>
+          ) : (
+            comments.map((comment) => (
+              <p key={comment.id}>
+                <strong>
+                  {comment.author.displayName ||
+                    comment.author.username}
+                </strong>{" "}
+                {comment.content}
+              </p>
+            ))
+          )}
+
+          <form onSubmit={handleComment}>
+            <input
+              type="text"
+              value={commentContent}
+              onChange={(event) =>
+                setCommentContent(event.target.value)
+              }
+              placeholder="Write a comment..."
+              required
+            />
+
+            <button type="submit">
+              Comment
+            </button>
+          </form>
+        </div>
+      )}
     </article>
   );
 }

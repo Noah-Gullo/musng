@@ -1,8 +1,8 @@
 const { Router } = require('express')
 const passport = require("passport");
 const { signup, login, logout, getMe } = require("../controllers/authController");
-const { newPost, getFeed, likePost, unlikePost } = require("../controllers/postController")
-const { getUsers, followUser, unfollowUser } = require("../controllers/userController");
+const { newPost, getFeed, likePost, unlikePost, newComment } = require("../controllers/postController")
+const { getUsers, followUser, unfollowUser, getProfile } = require("../controllers/userController");
 const requireAuth = require("../middleware/requireAuth");
 const indexRouter = Router();
 
@@ -15,8 +15,9 @@ indexRouter.get("/posts/", requireAuth, getFeed);
 indexRouter.post("/posts/", requireAuth, newPost);
 indexRouter.post("/posts/:id/like", requireAuth,likePost);
 indexRouter.delete("/posts/:id/like", requireAuth,unlikePost);
+indexRouter.post("/posts/:id/comments",requireAuth,newComment);
 
-indexRouter.get("/users", requireAuth, getUsers);
+indexRouter.get("/users", requireAuth, getUsers);q
 indexRouter.post("/users/:id/follow", requireAuth, followUser);
 indexRouter.delete("/users/:id/follow", requireAuth, unfollowUser);
 

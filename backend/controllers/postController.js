@@ -184,9 +184,63 @@ async function unlikePost(req, res) {
   }
 }
 
+async function newComment(req, res) {
+  try {
+    const postId = Number(req.params.id);
+    const { content } = req.body;
+
+    if (!content || !content.trim()) {
+      return res.status(400).json({
+        message: "Comment cannot be empty",
+      });
+    }
+
+    const post = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+    });
+
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found",
+      });
+    }
+
+    const comment = await prisma.comment.create({
+      data: {
+        content: content.trim(),
+        authorId: req.user.id,
+        postId,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+          },
+        },
+      },
+    });
+
+    return res.status(201).json({
+      message: "Comment created",
+      comment,
+    });
+  } catch (error) {
+    console.error("Create comment error:", error);
+
+    return res.status(500).json({
+      message: "Could not create comment",
+    });
+  }
+}
+
 module.exports = {
   newPost,
   getFeed,
   likePost,
-  unlikePost
+  unlikePost,
+  newComment
 };
