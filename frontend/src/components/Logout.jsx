@@ -18,7 +18,10 @@ function Logout({ onLogout }) {
         return;
       }
 
-      onLogout();
+      if (onLogout) {
+        onLogout();
+      }
+
       navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);

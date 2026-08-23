@@ -83,9 +83,9 @@ function Home() {
         </section>
       ) : (
         <section className="feed">
-          <Navbar></Navbar>
+          <Navbar userId={user.id} onLogout={() => setUser(null)} />
           <h1>
-            Welcome, {user.displayName || user.username}!
+            Welcome, {user.displayName || "@" + user.username}!
           </h1>
 
           <h2>Recent Posts</h2>
@@ -99,7 +99,6 @@ function Home() {
               <Post key={post.id} post={post} userId={user.id}/>
             ))
           )}
-          <Logout onLogout={() => setUser(null)} />
         </section>
       )}
     </main>

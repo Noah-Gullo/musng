@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar"
+import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 function Users() {
   const [users, setUsers] = useState([]);
@@ -67,29 +68,47 @@ function Users() {
 
   return (
     <main className="users-page">
-      <Navbar></Navbar>
+      <Navbar />
+
       <h1>Users</h1>
 
       {error && <p>{error}</p>}
 
       <section className="users-list">
-        {users.map((user) => (
-          <article key={user.id} className="user-card">
-            <h2>
-              {user.displayName || user.username}
-            </h2>
+        {users.length === 0 ? (
+          <p>No users found.</p>
+        ) : (
+          users.map((user) => (
+            <article key={user.id} className="user-card">
+              {user.profilePhoto && (
+                <Link to={`/users/${user.id}`}>
+                  <img
+                    src={user.profilePhoto}
+                    alt={`${user.username}'s profile`}
+                    className="profile-photo"
+                  />
+                </Link>
+              )}
 
-            <p>@{user.username}</p>
+              <Link to={`/users/${user.id}`}>
+                <h2>
+                  {user.displayName || user.username}
+                </h2>
+              </Link>
 
-            <button
-              onClick={() =>
-                handleFollow(user.id, user.isFollowing)
-              }
-            >
-              {user.isFollowing ? "Following" : "Follow"}
-            </button>
-          </article>
-        ))}
+              <p>@{user.username}</p>
+
+              <button
+                type="button"
+                onClick={() =>
+                  handleFollow(user.id, user.isFollowing)
+                }
+              >
+                {user.isFollowing ? "Following" : "Follow"}
+              </button>
+            </article>
+          ))
+        )}
       </section>
     </main>
   );

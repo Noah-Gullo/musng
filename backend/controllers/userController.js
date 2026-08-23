@@ -51,6 +51,12 @@ async function followUser(req, res) {
   try {
     const followingId = Number(req.params.id);
 
+    if (!Number.isInteger(followingId)) {
+      return res.status(400).json({
+        message: "Invalid user id",
+      });
+    }
+
     if (followingId === req.user.id) {
       return res.status(400).json({
         message: "You cannot follow yourself",
@@ -108,6 +114,12 @@ async function unfollowUser(req, res) {
   try {
     const followingId = Number(req.params.id);
 
+    if (!Number.isInteger(followingId)) {
+      return res.status(400).json({
+        message: "Invalid user id",
+      });
+    }
+
     const existingFollow = await prisma.follow.findUnique({
       where: {
         followerId_followingId: {
@@ -147,6 +159,12 @@ async function unfollowUser(req, res) {
 async function getProfile(req, res) {
   try {
     const userId = Number(req.params.id);
+
+    if (!Number.isInteger(userId)) {
+      return res.status(400).json({
+        message: "Invalid user id",
+      });
+    }
 
     const user = await prisma.user.findUnique({
       where: {
@@ -206,9 +224,38 @@ async function getProfile(req, res) {
   }
 }
 
+async function updateProfile(req, res) {
+  try {
+    const { displayName, bio, profilePhoto } = req.body;
+
+    const user = await prisma.user.update({
+      where: {
+        id: req.user.id,
+      },
+      data: {
+        displayName: displayName?.trim() || null,
+        bio: bio?.trim() || null,
+        profilePhoto: profilePhoto?.trim() || null,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Profile updated",
+      user,
+    });
+  } catch (error) {
+    console.error("Update profile error:", error);
+
+    return res.status(500).json({
+      message: "Could not update profile",
+    });
+  }
+}
+
 module.exports = {
   getUsers,
   followUser,
   unfollowUser,
-  getProfile
+  getProfile,
+  updateProfile,
 };

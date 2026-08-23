@@ -1,5 +1,15 @@
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const prisma = require("../db/prisma");
+
+function getGravatarUrl(email) {
+  const hash = crypto
+    .createHash("md5")
+    .update(email.trim().toLowerCase())
+    .digest("hex");
+
+  return `https://www.gravatar.com/avatar/${hash}?d=identicon`;
+}
 
 async function signup(req, res, next) {
   try {
@@ -33,6 +43,7 @@ async function signup(req, res, next) {
         username,
         email,
         passwordHash,
+        profilePhoto: getGravatarUrl(email),
       },
     });
 
@@ -48,6 +59,8 @@ async function signup(req, res, next) {
           username: user.username,
           email: user.email,
           displayName: user.displayName,
+          bio: user.bio,
+          profilePhoto: user.profilePhoto,
         },
       });
     });
@@ -68,6 +81,8 @@ function login(req, res) {
       username: req.user.username,
       email: req.user.email,
       displayName: req.user.displayName,
+      bio: req.user.bio,
+      profilePhoto: req.user.profilePhoto,
     },
   });
 }
@@ -99,6 +114,7 @@ function getMe(req, res) {
       username: req.user.username,
       email: req.user.email,
       displayName: req.user.displayName,
+      bio: req.user.bio,
       profilePhoto: req.user.profilePhoto,
     },
   });
