@@ -200,7 +200,7 @@ function Profile() {
             {user.profilePhoto && (
               <img
                 src={user.profilePhoto}
-                alt={`${user.username}'s profile`}
+                alt={`@${user.username}'s profile`}
                 className="profile-photo"
               />
             )}

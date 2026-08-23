@@ -95,7 +95,7 @@ function Post({ post, userId }) {
   return (
     <article className="post-card">
       <h3>
-        {post.author.displayName || post.author.username}
+        {post.author.displayName || "@" + post.author.username}
       </h3>
 
       <p className="post-content">
@@ -128,7 +128,7 @@ function Post({ post, userId }) {
               <p key={comment.id}>
                 <strong>
                   {comment.author.displayName ||
-                    comment.author.username}
+                    "@" + comment.author.username}
                 </strong>{" "}
                 {comment.content}
               </p>
