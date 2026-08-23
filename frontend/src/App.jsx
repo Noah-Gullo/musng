@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Home, Login, Signup, NewPost, Users, Profile, NotFound} from "./pages/Pages.js"
+import "./App.css"
 
 function App() {
   return (

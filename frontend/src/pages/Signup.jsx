@@ -51,7 +51,7 @@ function Signup() {
       <section className="auth-card">
         <header className="auth-header">
           <h1>Create Account</h1>
-          <p>Join Musng and start messaging.</p>
+          <p>Join Musng and start musing.</p>
         </header>
 
         <form className="auth-form" onSubmit={handleSubmit}>

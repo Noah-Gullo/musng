@@ -69,6 +69,7 @@ function NewPost() {
               }
               placeholder="What's on your mind?"
               rows="6"
+              maxLength={500}
               required
             />
           </div>

@@ -67,9 +67,11 @@ function Home() {
     <main className="home-page">
       {!user ? (
         <section className="home-content">
-          <h1>Musng</h1>
+          <h1 className="logo">Musng</h1>
 
-          <p>Sign in or create an account to continue.</p>
+          <p className="tagline">
+            A place for passing thoughts.
+          </p>
 
           <div className="home-actions">
             <Link to="/login" className="home-primary-button">
@@ -88,7 +90,7 @@ function Home() {
             Welcome, {user.displayName || "@" + user.username}!
           </h1>
 
-          <h2>Recent Posts</h2>
+          <h2>Recent Musngs</h2>
 
           {error && <p>{error}</p>}
 
