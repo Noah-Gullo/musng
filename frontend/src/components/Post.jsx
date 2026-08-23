@@ -25,8 +25,9 @@ function Post({ post, userId }) {
     try {
       setError("");
 
+      const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(
-        `http://localhost:3000/api/posts/${post.id}/like`,
+        `${API_URL}/api/posts/${post.id}/like`,
         {
           method: liked ? "DELETE" : "POST",
           credentials: "include",
@@ -83,8 +84,9 @@ function Post({ post, userId }) {
     try {
       setError("");
 
+      const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(
-        `http://localhost:3000/api/posts/${post.id}/comments`,
+        `${API_URL}/api/posts/${post.id}/comments`,
         {
           method: "POST",
           headers: {

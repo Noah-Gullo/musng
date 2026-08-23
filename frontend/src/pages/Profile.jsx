@@ -18,7 +18,8 @@ function Profile() {
   useEffect(() => {
     async function loadProfile() {
       try {
-        const meResponse = await fetch("http://localhost:3000/api/me", {
+        const API_URL = import.meta.env.VITE_API_URL;
+        const meResponse = await fetch(`${API_URL}/api/me`, {
           credentials: "include",
         });
 
@@ -42,7 +43,7 @@ function Profile() {
         }
 
         const profileResponse = await fetch(
-          `http://localhost:3000/api/users/${profileId}`,
+          `${API_URL}/users/${profileId}`,
           {
             credentials: "include",
           }
@@ -74,9 +75,9 @@ function Profile() {
 
     try {
       setError("");
-
+      const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(
-        "http://localhost:3000/api/me/profile",
+        `${API_URL}/api/me/profile`,
         {
           method: "PUT",
           headers: {
@@ -126,9 +127,9 @@ function Profile() {
 
     try {
       setError("");
-
+      const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(
-        `http://localhost:3000/api/users/${user.id}/follow`,
+        `${API_URL}/api/users/${user.id}/follow`,
         {
           method: isFollowing ? "DELETE" : "POST",
           credentials: "include",

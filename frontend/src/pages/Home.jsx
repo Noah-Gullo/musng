@@ -13,8 +13,9 @@ function Home() {
   useEffect(() => {
     async function loadHome() {
       try {
+        const API_URL = import.meta.env.VITE_API_URL;
         const userResponse = await fetch(
-          "http://localhost:3000/api/me",
+          `${API_URL}/api/me`,
           {
             credentials: "include",
           }
@@ -35,7 +36,7 @@ function Home() {
         setUser(userData.user);
 
         const postsResponse = await fetch(
-          "http://localhost:3000/api/posts",
+          `${API_URL}/api/posts`,
           {
             credentials: "include",
           }

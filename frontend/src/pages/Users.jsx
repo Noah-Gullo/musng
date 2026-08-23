@@ -10,7 +10,8 @@ function Users() {
   useEffect(() => {
     async function loadUsers() {
       try {
-        const meResponse = await fetch("http://localhost:3000/api/me", {
+        const API_URL = import.meta.env.VITE_API_URL;
+        const meResponse = await fetch(`${API_URL}/api/me`, {
           credentials: "include",
         });
 
@@ -19,7 +20,7 @@ function Users() {
           setCurrentUser(meData.user);
         }
 
-        const response = await fetch("http://localhost:3000/api/users", {
+        const response = await fetch(`${API_URL}/api/users`, {
           credentials: "include",
         });
 
@@ -43,8 +44,9 @@ function Users() {
     try {
       setError("");
 
+      const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(
-        `http://localhost:3000/api/users/${userId}/follow`,
+        `${API_URL}api/users/${userId}/follow`,
         {
           method: isFollowing ? "DELETE" : "POST",
           credentials: "include",
