@@ -67,9 +67,9 @@ function Home() {
     <main className="home-page">
       {!user ? (
         <section className="home-content">
-          <h1 className="logo">Musng</h1>
+          <h1 id="logo">Musng</h1>
 
-          <p className="tagline">
+          <p id="tagline">
             A place for passing thoughts.
           </p>
 

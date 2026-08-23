@@ -44,8 +44,8 @@ function Login() {
     <main className="auth-page">
       <section className="auth-card">
         <header className="auth-header">
-          <h1>Login</h1>
-          <p>Welcome back to Musng.</p>
+          <h1>Welcome back</h1>
+          <p>Sign in and see what's being mused.</p>
         </header>
 
         <form
@@ -53,17 +53,32 @@ function Login() {
           onSubmit={handleSubmit}
         >
           <div className="form-group">
-            <label htmlFor="username"> Username: </label>
+            <label htmlFor="username">
+              Username
+            </label>
 
-            <input id="username" type="text" value={username} onChange={(event) =>  
-              setUsername(event.target.value)
-              } placeholder="Enter your username"required />
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(event) =>
+                setUsername(event.target.value)
+              }
+              placeholder="Enter your username"
+              required
+            />
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password: </label>
+            <label htmlFor="password">
+              Password
+            </label>
 
-            <input id="password" type="password" value={password} onChange={(event) =>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(event) =>
                 setPassword(event.target.value)
               }
               placeholder="Enter your password"
@@ -72,18 +87,32 @@ function Login() {
           </div>
 
           {error && (
-            <p className="auth-error">{error}</p>
+            <p className="auth-error">
+              {error}
+            </p>
           )}
 
-          <button type="submit" className="auth-button">Login</button>
+          <button
+            type="submit"
+            className="auth-button"
+          >
+            Login
+          </button>
         </form>
 
-        <p className="auth-footer"> 
+        <p className="auth-footer">
           Don't have an account?{" "}
-          <Link to="/signup"> Sign Up</Link>
+          <Link to="/signup">
+            Sign Up
+          </Link>
         </p>
 
-        <Link to="/">Back to Home</Link>
+        <Link
+          to="/"
+          className="auth-home-link"
+        >
+          Back to Home
+        </Link>
       </section>
     </main>
   );
