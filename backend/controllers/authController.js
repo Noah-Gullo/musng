@@ -108,6 +108,12 @@ function logout(req, res, next) {
 }
 
 function getMe(req, res) {
+  if (!req.user) {
+    return res.status(200).json({
+      user: null,
+    });
+  }
+
   return res.status(200).json({
     user: {
       id: req.user.id,
@@ -119,6 +125,7 @@ function getMe(req, res) {
     },
   });
 }
+
 
 module.exports = {
   signup,

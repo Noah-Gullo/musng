@@ -8,11 +8,20 @@ function Post({ post, userId }) {
   const [commentContent, setCommentContent] = useState("");
   const [animateEcho, setAnimateEcho] = useState(false);
   const [echoDirection, setEchoDirection] = useState("");
+  const [burst, setBurst] = useState(false);
   const [error, setError] = useState("");
 
-  const liked = likes.some((like) => like.userId === userId);
+  const isLoggedIn = Boolean(userId);
+
+  const liked = isLoggedIn
+    ? likes.some((like) => like.userId === userId)
+    : false;
 
   async function handleLike() {
+    if (!isLoggedIn) {
+      return;
+    }
+
     try {
       setError("");
 
@@ -45,6 +54,12 @@ function Post({ post, userId }) {
         ]);
 
         setEchoDirection("up");
+
+        setBurst(false);
+
+        requestAnimationFrame(() => {
+          setBurst(true);
+        });
       }
 
       setAnimateEcho(false);
@@ -61,7 +76,7 @@ function Post({ post, userId }) {
   async function handleComment(event) {
     event.preventDefault();
 
-    if (!commentContent.trim()) {
+    if (!isLoggedIn || !commentContent.trim()) {
       return;
     }
 
@@ -113,30 +128,27 @@ function Post({ post, userId }) {
       <p className="post-content">{post.content}</p>
 
       <div className="post-actions">
-        <div className={`like-container ${liked ? "liked" : ""}`}>
-          <button type="button" className={`like-button ${liked ? "liked" : ""}`} onClick={handleLike} aria-label={liked ? "Remove echo" : "Echo this musng"}>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12.1 21.2C10.7 19.9 4.2 14.4 2.8 10.8C1.4 7.2 3.4 4.2 6.7 4.2C9 4.2 10.7 5.6 12 7.3C13.2 5.6 14.9 4.2 17.2 4.2C20.6 4.2 22.5 7.3 21.1 10.8C19.7 14.2 14.7 18.7 12.1 21.2Z" />
-            </svg>
-          </button>
+        {isLoggedIn && (
+          <div className={`like-container ${burst ? "burst" : ""}`}>
+            <button type="button" className={`like-button ${liked ? "liked" : ""}`} onClick={handleLike} aria-label={liked ? "Remove echo" : "Echo this musng"}>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12.1 21.2C10.7 19.9 4.2 14.4 2.8 10.8C1.4 7.2 3.4 4.2 6.7 4.2C9 4.2 10.7 5.6 12 7.3C13.2 5.6 14.9 4.2 17.2 4.2C20.6 4.2 22.5 7.3 21.1 10.8C19.7 14.2 14.7 18.7 12.1 21.2Z" />
+              </svg>
+            </button>
 
-          <span className="spark spark-1"></span>
-          <span className="spark spark-2"></span>
-          <span className="spark spark-3"></span>
-          <span className="spark spark-4"></span>
-          <span className="spark spark-5"></span>
-          <span className="spark spark-6"></span>
-          <span className="spark spark-7"></span>
-          <span className="spark spark-8"></span>
-        </div>
+            <span className="spark spark-1" onAnimationEnd={() => setBurst(false)}></span>
+            <span className="spark spark-2"></span>
+            <span className="spark spark-3"></span>
+            <span className="spark spark-4"></span>
+            <span className="spark spark-5"></span>
+            <span className="spark spark-6"></span>
+            <span className="spark spark-7"></span>
+            <span className="spark spark-8"></span>
+          </div>
+        )}
 
         <span className="echo-count">
-          <span
-            className={`echo-number ${
-              animateEcho ? `echo-${echoDirection}` : ""
-            }`}
-            onAnimationEnd={() => setAnimateEcho(false)}
-          >
+          <span className={`echo-number ${animateEcho ? `echo-${echoDirection}` : ""}`} onAnimationEnd={() => setAnimateEcho(false)}>
             {likes.length}
           </span>
 
@@ -166,10 +178,16 @@ function Post({ post, userId }) {
             ))
           )}
 
-          <form onSubmit={handleComment}>
-            <input type="text" value={commentContent} onChange={(event) => setCommentContent(event.target.value)} placeholder="Add a reply..." required />
-            <button type="submit">Reply</button>
-          </form>
+          {isLoggedIn ? (
+            <form onSubmit={handleComment}>
+              <input type="text" value={commentContent} onChange={(event) => setCommentContent(event.target.value)} placeholder="Add a reply..." required />
+              <button type="submit">Reply</button>
+            </form>
+          ) : (
+            <p className="guest-message">
+              <Link to="/login">Sign in</Link> to reply.
+            </p>
+          )}
         </div>
       )}
     </article>

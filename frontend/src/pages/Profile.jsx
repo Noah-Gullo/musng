@@ -22,15 +22,24 @@ function Profile() {
           credentials: "include",
         });
 
-        if (!meResponse.ok) {
-          setError("Could not load user");
+        let meData = null;
+
+        if (meResponse.ok) {
+          meData = await meResponse.json();
+          setCurrentUser(meData.user);
+        } else if (meResponse.status === 401) {
+          setCurrentUser(null);
+        } else {
+          setError("Could not check session");
           return;
         }
 
-        const meData = await meResponse.json();
-        setCurrentUser(meData.user);
+        const profileId = id || meData?.user?.id;
 
-        const profileId = id || meData.user.id;
+        if (!profileId) {
+          setError("Could not load profile");
+          return;
+        }
 
         const profileResponse = await fetch(
           `http://localhost:3000/api/users/${profileId}`,
@@ -50,7 +59,7 @@ function Profile() {
         setDisplayName(profileData.user.displayName || "");
         setBio(profileData.user.bio || "");
         setProfilePhoto(profileData.user.profilePhoto || "");
-        setIsFollowing(profileData.user.isFollowing);
+        setIsFollowing(profileData.user.isFollowing || false);
       } catch (error) {
         console.error(error);
         setError("Could not connect to server");
@@ -111,6 +120,10 @@ function Profile() {
   }
 
   async function handleFollow() {
+    if (!currentUser) {
+      return;
+    }
+
     try {
       setError("");
 
@@ -139,34 +152,31 @@ function Profile() {
     return <p>{error}</p>;
   }
 
-  if (!user || !currentUser) {
+  if (!user) {
     return <p>Loading...</p>;
   }
 
-  const isOwnProfile = user.id === currentUser.id;
+  const isOwnProfile = user.id === currentUser?.id;
 
   return (
     <main className="profile-page">
-      <Navbar />
+      <Navbar user={currentUser} />
 
       <section className="profile-header">
         {editing ? (
           <form onSubmit={handleUpdate}>
             <div className="form-group">
               <label htmlFor="displayName">Display Name</label>
-
               <input id="displayName" type="text" value={displayName} onChange={(event) => setDisplayName(event.target.value)} />
             </div>
 
             <div className="form-group">
               <label htmlFor="bio">Bio</label>
-
               <textarea id="bio" value={bio} onChange={(event) => setBio(event.target.value)} rows="4" />
             </div>
 
             <div className="form-group">
               <label htmlFor="profilePhoto">Profile Photo URL</label>
-
               <input id="profilePhoto" type="url" value={profilePhoto} onChange={(event) => setProfilePhoto(event.target.value)} placeholder="https://example.com/photo.jpg" />
             </div>
 
@@ -186,17 +196,18 @@ function Profile() {
             )}
 
             <h1>{user.displayName || user.username}</h1>
-
             <p>@{user.username}</p>
 
             {user.bio && <p>{user.bio}</p>}
 
-            {isOwnProfile ? (
-              <button type="button" onClick={() => setEditing(true)}>Edit Profile</button>
-            ) : (
-              <button type="button" onClick={handleFollow}>
-                {isFollowing ? "Following" : "Follow"}
-              </button>
+            {currentUser && (
+              isOwnProfile ? (
+                <button type="button" onClick={() => setEditing(true)}>Edit Profile</button>
+              ) : (
+                <button type="button" onClick={handleFollow}>
+                  {isFollowing ? "Following" : "Follow"}
+                </button>
+              )
             )}
           </>
         )}
@@ -209,7 +220,7 @@ function Profile() {
           <p>No posts yet.</p>
         ) : (
           user.posts.map((post) => (
-            <Post key={post.id} post={post} userId={currentUser.id} />
+            <Post key={post.id} post={post} userId={currentUser?.id} />
           ))
         )}
       </section>

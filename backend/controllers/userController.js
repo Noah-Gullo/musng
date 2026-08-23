@@ -2,21 +2,29 @@ const prisma = require("../db/prisma");
 
 async function getUsers(req, res) {
   try {
+    const currentUserId = req.user?.id;
+
     const users = await prisma.user.findMany({
-      where: {
-        id: {
-          not: req.user.id,
-        },
-      },
+      where: currentUserId
+        ? {
+            id: {
+              not: currentUserId,
+            },
+          }
+        : {},
       select: {
         id: true,
         username: true,
         displayName: true,
         profilePhoto: true,
         followers: {
-          where: {
-            followerId: req.user.id,
-          },
+          where: currentUserId
+            ? {
+                followerId: currentUserId,
+              }
+            : {
+                followerId: -1,
+              },
           select: {
             id: true,
           },
@@ -32,7 +40,9 @@ async function getUsers(req, res) {
       username: user.username,
       displayName: user.displayName,
       profilePhoto: user.profilePhoto,
-      isFollowing: user.followers.length > 0,
+      isFollowing: currentUserId
+        ? user.followers.length > 0
+        : false,
     }));
 
     return res.status(200).json({
@@ -159,6 +169,7 @@ async function unfollowUser(req, res) {
 async function getProfile(req, res) {
   try {
     const userId = Number(req.params.id);
+    const currentUserId = req.user?.id;
 
     if (!Number.isInteger(userId)) {
       return res.status(400).json({
@@ -176,16 +187,18 @@ async function getProfile(req, res) {
         displayName: true,
         bio: true,
         profilePhoto: true,
-
         followers: {
-          where: {
-            followerId: req.user.id,
-          },
+          where: currentUserId
+            ? {
+                followerId: currentUserId,
+              }
+            : {
+                followerId: -1,
+              },
           select: {
             id: true,
           },
         },
-
         posts: {
           include: {
             author: {
@@ -223,9 +236,15 @@ async function getProfile(req, res) {
     }
 
     const formattedUser = {
-      ...user,
-      isFollowing: user.followers.length > 0,
-      followers: undefined,
+      id: user.id,
+      username: user.username,
+      displayName: user.displayName,
+      bio: user.bio,
+      profilePhoto: user.profilePhoto,
+      posts: user.posts,
+      isFollowing: currentUserId
+        ? user.followers.length > 0
+        : false,
     };
 
     return res.status(200).json({

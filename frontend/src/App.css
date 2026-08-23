@@ -38,15 +38,11 @@ body {
   text-align: center;
 }
 
-.home-content a {
-  margin: 2em;
-}
-
 .home-actions {
   display: flex;
   justify-content: center;
   gap: 16px;
-  margin-top: 10px;
+  margin-top: 28px;
 }
 
 .home-primary-button,
@@ -779,4 +775,53 @@ body {
 
 .new-post-card button {
   margin-top: 10px;
+}
+
+.home-guest-button {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.home-guest-button:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.password-input {
+  position: relative;
+}
+
+.password-input input {
+  width: 100%;
+  padding-right: 42px;
+}
+
+.password-input button {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  padding: 0;
+  background: transparent;
+  color: var(--muted);
+  border: none;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.password-input button:hover {
+  color: var(--accent);
+}
+
+.password-input svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }

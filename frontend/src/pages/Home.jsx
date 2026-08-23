@@ -68,10 +68,7 @@ function Home() {
       {!user ? (
         <section className="home-content">
           <h1 id="logo">Musng</h1>
-
-          <p id="tagline">
-            A place for passing thoughts.
-          </p>
+          <p id="tagline">A place for passing thoughts.</p>
 
           <div className="home-actions">
             <Link to="/login" className="home-primary-button">
@@ -82,10 +79,14 @@ function Home() {
               Signup
             </Link>
           </div>
+
+          <Link to="/guest" className="home-guest-button">
+            View as Guest
+          </Link>
         </section>
       ) : (
         <section className="feed">
-          <Navbar userId={user.id} onLogout={() => setUser(null)} />
+          <Navbar user={user} onLogout={() => setUser(null)} />
           <h1>
             Welcome, {user.displayName || "@" + user.username}!
           </h1>

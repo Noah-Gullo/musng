@@ -4,17 +4,24 @@ import Navbar from "../components/Navbar";
 
 function Users() {
   const [users, setUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function getUsers() {
+    async function loadUsers() {
       try {
-        const response = await fetch(
-          "http://localhost:3000/api/users",
-          {
-            credentials: "include",
-          }
-        );
+        const meResponse = await fetch("http://localhost:3000/api/me", {
+          credentials: "include",
+        });
+
+        if (meResponse.ok) {
+          const meData = await meResponse.json();
+          setCurrentUser(meData.user);
+        }
+
+        const response = await fetch("http://localhost:3000/api/users", {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           setError("Could not load users");
@@ -29,7 +36,7 @@ function Users() {
       }
     }
 
-    getUsers();
+    loadUsers();
   }, []);
 
   async function handleFollow(userId, isFollowing) {
@@ -68,47 +75,40 @@ function Users() {
 
   return (
     <main className="users-page">
-      <Navbar />
+      <Navbar user={currentUser} />
 
       <h1>Users</h1>
 
       {error && <p>{error}</p>}
 
       <section className="users-list">
-        {users.length === 0 ? (
-          <p>No users found.</p>
-        ) : (
-          users.map((user) => (
-            <article key={user.id} className="user-card">
+        {users.map((user) => (
+          <article key={user.id} className="user-card">
+            <Link to={`/users/${user.id}`}>
               {user.profilePhoto && (
-                <Link to={`/users/${user.id}`}>
-                  <img
-                    src={user.profilePhoto}
-                    alt={`${user.username}'s profile`}
-                    className="profile-photo"
-                  />
-                </Link>
+                <img
+                  src={user.profilePhoto}
+                  alt={`@${user.username}'s profile`}
+                  className="profile-photo"
+                />
               )}
+            </Link>
 
+            <div className="user-info">
               <Link to={`/users/${user.id}`}>
-                <h2>
-                  {user.displayName || user.username}
-                </h2>
+                <h2>{user.displayName || user.username}</h2>
               </Link>
 
               <p>@{user.username}</p>
+            </div>
 
-              <button
-                type="button"
-                onClick={() =>
-                  handleFollow(user.id, user.isFollowing)
-                }
-              >
+            {currentUser && (
+              <button type="button" onClick={() => handleFollow(user.id, user.isFollowing)}>
                 {user.isFollowing ? "Following" : "Follow"}
               </button>
-            </article>
-          ))
-        )}
+            )}
+          </article>
+        ))}
       </section>
     </main>
   );

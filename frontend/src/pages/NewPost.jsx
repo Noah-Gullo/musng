@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {  useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar"
 
 function NewPost() {
@@ -7,7 +7,29 @@ function NewPost() {
 
   const [content, setContent] = useState("");
   const [error, setError] = useState("");
+  const [user, setUser] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const response = await fetch("http://localhost:3000/api/me", {
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+        setUser(data.user);
+      } catch (error) {
+        console.error("Could not load user:", error);
+      }
+    }
+
+    loadUser();
+  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -53,7 +75,7 @@ function NewPost() {
 
   return (
     <main className="new-post-page">
-      <Navbar></Navbar>
+      <Navbar user={user} onLogout={() => setUser(null)} />
       <section className="new-post-card">
         <h1>New Musng</h1>
 

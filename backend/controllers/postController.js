@@ -2,8 +2,8 @@ const prisma = require("../db/prisma");
 
 async function getFeed(req, res) {
   try {
-    const posts = await prisma.post.findMany({
-      where: {
+    const where = req.user
+    ? {
         OR: [
           {
             authorId: req.user.id,
@@ -18,7 +18,11 @@ async function getFeed(req, res) {
             },
           },
         ],
-      },
+      }
+    : {};
+
+    const posts = await prisma.post.findMany({
+      where,
       include: {
         author: {
           select: {
