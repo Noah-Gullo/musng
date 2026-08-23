@@ -29,7 +29,7 @@ function Logout({ onLogout }) {
   }
 
   return (
-    <button type="button" className="logoutBtn" onClick={handleLogout}>
+    <button type="button" id="logoutBtn" className="navbar-link" onClick={handleLogout}>
       Logout
     </button>
   );

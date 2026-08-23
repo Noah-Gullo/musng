@@ -55,7 +55,7 @@ function NewPost() {
     <main className="new-post-page">
       <Navbar></Navbar>
       <section className="new-post-card">
-        <h1>New Post</h1>
+        <h1>New Musng</h1>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">

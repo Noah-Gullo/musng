@@ -60,36 +60,38 @@ async function getFeed(req, res) {
 
 async function newPost(req, res) {
   try {
-    if (!req.user) {
-      return res.status(401).json({
-        message: "Not authenticated",
-      });
-    }
-
     const { content } = req.body;
 
     if (!content || !content.trim()) {
       return res.status(400).json({
-        message: "Post cannot be empty",
+        message: "Musng cannot be empty",
+      });
+    }
+
+    const trimmedContent = content.trim();
+
+    if (trimmedContent.length > 500) {
+      return res.status(400).json({
+        message: "Musng cannot exceed 500 characters",
       });
     }
 
     const post = await prisma.post.create({
       data: {
-        content: content.trim(),
+        content: trimmedContent,
         authorId: req.user.id,
       },
     });
 
     return res.status(201).json({
-      message: "Post created",
+      message: "Musng created",
       post,
     });
   } catch (error) {
     console.error("Create post error:", error);
 
     return res.status(500).json({
-      message: "Could not create post",
+      message: "Could not create musng",
     });
   }
 }

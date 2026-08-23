@@ -8,23 +8,19 @@ function Profile() {
 
   const [user, setUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
-
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
   const [profilePhoto, setProfilePhoto] = useState("");
-
+  const [isFollowing, setIsFollowing] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     async function loadProfile() {
       try {
-        const meResponse = await fetch(
-          "http://localhost:3000/api/me",
-          {
-            credentials: "include",
-          }
-        );
+        const meResponse = await fetch("http://localhost:3000/api/me", {
+          credentials: "include",
+        });
 
         if (!meResponse.ok) {
           setError("Could not load user");
@@ -54,6 +50,7 @@ function Profile() {
         setDisplayName(profileData.user.displayName || "");
         setBio(profileData.user.bio || "");
         setProfilePhoto(profileData.user.profilePhoto || "");
+        setIsFollowing(profileData.user.isFollowing);
       } catch (error) {
         console.error(error);
         setError("Could not connect to server");
@@ -113,6 +110,31 @@ function Profile() {
     setEditing(false);
   }
 
+  async function handleFollow() {
+    try {
+      setError("");
+
+      const response = await fetch(
+        `http://localhost:3000/api/users/${user.id}/follow`,
+        {
+          method: isFollowing ? "DELETE" : "POST",
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.message || "Could not update follow");
+        return;
+      }
+
+      setIsFollowing((current) => !current);
+    } catch (error) {
+      console.error(error);
+      setError("Could not update follow");
+    }
+  }
+
   if (error) {
     return <p>{error}</p>;
   }
@@ -131,94 +153,49 @@ function Profile() {
         {editing ? (
           <form onSubmit={handleUpdate}>
             <div className="form-group">
-              <label htmlFor="displayName">
-                Display Name
-              </label>
+              <label htmlFor="displayName">Display Name</label>
 
-              <input
-                id="displayName"
-                type="text"
-                value={displayName}
-                onChange={(event) =>
-                  setDisplayName(event.target.value)
-                }
-              />
+              <input id="displayName" type="text" value={displayName} onChange={(event) => setDisplayName(event.target.value)} />
             </div>
 
             <div className="form-group">
-              <label htmlFor="bio">
-                Bio
-              </label>
+              <label htmlFor="bio">Bio</label>
 
-              <textarea
-                id="bio"
-                value={bio}
-                onChange={(event) =>
-                  setBio(event.target.value)
-                }
-                rows="4"
-              />
+              <textarea id="bio" value={bio} onChange={(event) => setBio(event.target.value)} rows="4" />
             </div>
 
             <div className="form-group">
-              <label htmlFor="profilePhoto">
-                Profile Photo URL
-              </label>
+              <label htmlFor="profilePhoto">Profile Photo URL</label>
 
-              <input
-                id="profilePhoto"
-                type="url"
-                value={profilePhoto}
-                onChange={(event) =>
-                  setProfilePhoto(event.target.value)
-                }
-                placeholder="https://example.com/photo.jpg"
-              />
+              <input id="profilePhoto" type="url" value={profilePhoto} onChange={(event) => setProfilePhoto(event.target.value)} placeholder="https://example.com/photo.jpg" />
             </div>
 
             {profilePhoto && (
-              <img
-                src={profilePhoto}
-                alt="Profile preview"
-                className="profile-photo"
-              />
+              <img src={profilePhoto} alt="Profile preview" className="profile-photo" />
             )}
 
-            <button type="submit">
-              Save
-            </button>
-
-            <button
-              type="button"
-              onClick={handleCancel}
-            >
-              Cancel
-            </button>
+            <div className="profile-form-actions">
+              <button type="submit">Save</button>
+              <button type="button" onClick={handleCancel}>Cancel</button>
+            </div>
           </form>
         ) : (
           <>
             {user.profilePhoto && (
-              <img
-                src={user.profilePhoto}
-                alt={`@${user.username}'s profile`}
-                className="profile-photo"
-              />
+              <img src={user.profilePhoto} alt={`@${user.username}'s profile`} className="profile-photo" />
             )}
 
-            <h1>
-              {user.displayName || user.username}
-            </h1>
+            <h1>{user.displayName || user.username}</h1>
 
             <p>@{user.username}</p>
 
             {user.bio && <p>{user.bio}</p>}
 
-            {isOwnProfile && (
-              <button
-                type="button"
-                onClick={() => setEditing(true)}
-              >
-                Edit Profile
+            {isOwnProfile ? (
+              <button type="button" onClick={() => setEditing(true)}>Edit Profile</button>
+            ) : (
+              <button type="button" onClick={handleFollow}>
+                {isFollowing ? "Following" : "Follow"}
               </button>
             )}
           </>
@@ -232,11 +209,7 @@ function Profile() {
           <p>No posts yet.</p>
         ) : (
           user.posts.map((post) => (
-            <Post
-              key={post.id}
-              post={post}
-              userId={currentUser.id}
-            />
+            <Post key={post.id} post={post} userId={currentUser.id} />
           ))
         )}
       </section>

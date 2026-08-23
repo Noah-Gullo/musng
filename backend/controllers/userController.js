@@ -176,6 +176,16 @@ async function getProfile(req, res) {
         displayName: true,
         bio: true,
         profilePhoto: true,
+
+        followers: {
+          where: {
+            followerId: req.user.id,
+          },
+          select: {
+            id: true,
+          },
+        },
+
         posts: {
           include: {
             author: {
@@ -212,8 +222,14 @@ async function getProfile(req, res) {
       });
     }
 
+    const formattedUser = {
+      ...user,
+      isFollowing: user.followers.length > 0,
+      followers: undefined,
+    };
+
     return res.status(200).json({
-      user,
+      user: formattedUser,
     });
   } catch (error) {
     console.error("Get profile error:", error);
