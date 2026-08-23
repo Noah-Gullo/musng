@@ -160,7 +160,7 @@ function Profile() {
 
   return (
     <main className="profile-page">
-      <Navbar user={currentUser} />
+      <Navbar />
 
       <section className="profile-header">
         {editing ? (

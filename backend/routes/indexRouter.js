@@ -4,10 +4,12 @@ const { signup, login, logout, getMe } = require("../controllers/authController"
 const { newPost, getFeed, likePost, unlikePost, newComment } = require("../controllers/postController")
 const { getUsers, followUser, unfollowUser, getProfile, updateProfile } = require("../controllers/userController");
 const requireAuth = require("../middleware/requireAuth");
+const validateRequest = require("../middleware/validateRequest");
+const { signupValidators, loginValidators } = require('../middleware/authValidators');
 const indexRouter = Router();
 
-indexRouter.post("/signup", signup);
-indexRouter.post( "/login", passport.authenticate("local"), login );
+indexRouter.post("/signup", signupValidators, validateRequest, signup);
+indexRouter.post( "/login", loginValidators, validateRequest, passport.authenticate("local"), login );
 indexRouter.post("/logout", logout);
 indexRouter.get("/me", getMe);
 indexRouter.put("/me/profile", requireAuth, updateProfile);
