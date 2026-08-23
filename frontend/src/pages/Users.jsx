@@ -46,7 +46,7 @@ function Users() {
 
       const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(
-        `${API_URL}api/users/${userId}/follow`,
+        `${API_URL}/api/users/${userId}/follow`,
         {
           method: isFollowing ? "DELETE" : "POST",
           credentials: "include",
