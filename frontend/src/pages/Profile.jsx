@@ -43,7 +43,7 @@ function Profile() {
         }
 
         const profileResponse = await fetch(
-          `${API_URL}/users/${profileId}`,
+          `${API_URL}/api/users/${profileId}`,
           {
             credentials: "include",
           }
